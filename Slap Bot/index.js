@@ -9,13 +9,13 @@ const { Integer } = require('better-sqlite3');
  const file = new Discord.MessageAttachment('../Slap Bot/selfSlap.gif');
 
 
- 
+ var lastSlapDate;
 
 
 
 client.once('ready', () => {
  console.log(`Logged in as ${client.user.tag}!`);
- 
+ lastSlapDate = new Date();
 
  const table = sql.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = 'slaps';").get();
     if (!table['count(*)']) {
@@ -48,10 +48,15 @@ client.once('ready', () => {
 
 
  });
+ 
 
 
 
 client.on('message', msg => {
+	//React to every message that contains pog with the pog reaction because why not. Requires Nitro.
+	//if (msg.content.includes('pog')){
+	//	msg.react('610639938643427354');
+	//}
     if (!msg.content.startsWith(prefix) || msg.author.bot) return;
     //if (!msg.member.roles.cache.some((role) => role.name === `${modrole}`)) return
 
@@ -70,12 +75,33 @@ client.on('message', msg => {
             msg.channel.send(`Hah. Only an idiot would try to slap thin air.`)
             return;
         }
+		//check if user did something stupid like slap an entire role
         //add a slap to tagged user
         var taggedUser = msg.mentions.users.first();
 		if (taggedUser === undefined){
-			msg.channel.send(`You thought I wasn't able to code in all the corner cases BUT I WAS HAHAHAHA`)
+			try {
+				var taggedRole = msg.mentions.roles.first();
+				var taggedRoleName = msg.mentions.roles.first().role;
+				msg.channel.send(`You and I both know you don't have nearly enough hands to do whatever it is you do with them and also slap all of the people with the ` + taggedRoleName + ` role.`);
+			}
+			catch (e){
+				msg.channel.send(`You thought I wasn't able to code in all the corner cases BUT I WAS HAHAHAHA`)
+			}
+			
 			return;
 		}
+		const now = new Date();
+		console.log("Valid slap command received");
+		
+		if (now - lastSlapDate <= 1 * 30 * 1000) { //I think this is 30 seconds
+			console.log("On cooldown");
+			if (Math.floor(Math.random() * 10) > 7){
+				msg.channel.send(`You fuckin loser do you really spend all day spamming a bot`);
+			}
+			
+			return;
+		}
+		lastSlapDate = now;
 		taggedUser = msg.mentions.users.first().id;
         const taggedUserDisplay = msg.mentions.users.first().username;
         let score = client.getScore.get(taggedUser, msg.guild.id);
@@ -122,6 +148,11 @@ client.on('message', msg => {
             titleText = 'A little weird but I won\'t judge';
             gifSend = 'https://imgur.com/BVq5OvM.gif';
         }
+		if (msg.mentions.users.first().bot){
+			titleText = "We're made of METAL doesn't that HURT?";
+			gifSend = 'https://imgur.com/dKDiwaR.gif';
+			
+		}
         //console.log(gifSend);
 
         const slapEmbed = {
@@ -140,13 +171,27 @@ client.on('message', msg => {
 
     else if (msg.content.startsWith(`${prefix}topslaps`)){
         const top5 = sql.prepare("SELECT * FROM slaps WHERE guild = ? ORDER BY slapcount DESC LIMIT 5;").all(msg.guild.id);
-
+		
+		const tSlapsData = sql.prepare("SELECT slapcount FROM slaps WHERE guild = ?;").all(msg.guild.id);
+		const tSlappersData = sql2.prepare("SELECT peopleSlapped FROM slappers WHERE guild = ?;").all(msg.guild.id);
+		
+		var totalPeopleSlapped = tSlapsData.length;
+		var totalPeopleSlapping = tSlappersData.length;
+		var totalSlaps = 0;
+		var totalSlappers = 0;
+		for (const data of tSlapsData){
+			totalSlaps += data.slapcount;
+		}
+		for (const data of tSlappersData){
+			totalSlappers += data.peopleSlapped;
+		}
         
         const embed = new Discord.MessageEmbed()
         .setTitle("Leaderboard?")
         .setAuthor(client.user.username, client.user.avatarURL())
         .setFooter(slapText[Math.floor(Math.random() * slapText.length)])
         //.setDescription("The slapped")
+		.setDescription(`${totalPeopleSlapped} people have been slapped ${totalSlaps} times by ${totalPeopleSlapping} slappers`)
         .setColor(0x00AE86);
         
         var i = 1;
