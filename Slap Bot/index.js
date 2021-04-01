@@ -53,7 +53,7 @@ client.once('ready', () => {
 
 client.on('message', msg => {
     if (!msg.content.startsWith(prefix) || msg.author.bot) return;
-    if (!msg.member.roles.cache.some((role) => role.name === `${modrole}`)) return
+    //if (!msg.member.roles.cache.some((role) => role.name === `${modrole}`)) return
 
 
     const args = msg.content.slice(prefix.length).trim().split(/ +/);
@@ -71,7 +71,12 @@ client.on('message', msg => {
             return;
         }
         //add a slap to tagged user
-        const taggedUser = msg.mentions.users.first().id;
+        var taggedUser = msg.mentions.users.first();
+		if (taggedUser === undefined){
+			msg.channel.send(`You thought I wasn't able to code in all the corner cases BUT I WAS HAHAHAHA`)
+			return;
+		}
+		taggedUser = msg.mentions.users.first().id;
         const taggedUserDisplay = msg.mentions.users.first().username;
         let score = client.getScore.get(taggedUser, msg.guild.id);
         //If user is new, add them to the table
@@ -104,20 +109,20 @@ client.on('message', msg => {
         slapped.peopleSlapped++;
         var currentSlapped = (slapped.peopleSlapped);
         client.setSlapped.run(slapped);
-        console.log(taggedUser);
-        console.log(msg.author.id);
+        //console.log(taggedUser);
+        console.log(msg.author.username + " slapped " + taggedUserDisplay);
 
 
         //Choose random gif from array in config
         var gifToSend = slaps[Math.floor(Math.random() * slaps.length)];
         var gifSend = gifToSend + '.gif';
-        console.log(currentSlaps);
+        //console.log(currentSlaps);
         var titleText = `You've been slapped by ${msg.author.username}!`;
         if (msg.author.id == taggedUser){
             titleText = 'A little weird but I won\'t judge';
             gifSend = 'https://imgur.com/BVq5OvM.gif';
         }
-        console.log(gifSend);
+        //console.log(gifSend);
 
         const slapEmbed = {
             title: titleText,
@@ -136,7 +141,7 @@ client.on('message', msg => {
     else if (msg.content.startsWith(`${prefix}topslaps`)){
         const top5 = sql.prepare("SELECT * FROM slaps WHERE guild = ? ORDER BY slapcount DESC LIMIT 5;").all(msg.guild.id);
 
-        // Now shake it and show it! (as a nice embed, too!)
+        
         const embed = new Discord.MessageEmbed()
         .setTitle("Leaderboard?")
         .setAuthor(client.user.username, client.user.avatarURL())
@@ -166,7 +171,9 @@ client.on('message', msg => {
         }
 
         embed.addFields({name: 'Top 5 most slapped', value: embedVal, inline: true}, {name: 'Top 5 slappers', value : embedVal2, inline : true});
-        return msg.channel.send({embed})
+        console.log(embedVal);
+		console.log(embedVal2);
+		return msg.channel.send({embed})
     }
 
 
