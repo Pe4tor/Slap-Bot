@@ -1,0 +1,9 @@
+Slap Bot/node_modules/
+Slap Bot/models/
+Slap Bot/config.json
+Slap Bot/slappers.sqlite
+Slap Bot/slappers.sqlite-shm
+Slap Bot/slappers.sqlite-wal
+Slap Bot/slaps.sqlite
+Slap Bot/slaps.sqlite-shm
+Slap Bot/slaps.sqlite-wal
