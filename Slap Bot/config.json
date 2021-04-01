@@ -1,0 +1,15 @@
+{
+	"prefix": "YOUR_PREFIX_HERE",
+	"token": "YOUR_BOT_TOKEN_HERE",
+    "modrole": "YOUR_MODROLE_HERE",
+
+    "slaps":["https://imgur.com/iBikCgi", "https://imgur.com/sGmbLEs", "https://imgur.com/nWDLY87", "https://imgur.com/OWLxQSA", "https://imgur.com/yh6v8CO",
+             "https://imgur.com/oLFEzOk", "https://imgur.com/Gmvr42N", "https://imgur.com/eUxg8Gq", "https://imgur.com/9bnYAY9", "https://imgur.com/chKnFKg",
+             "https://imgur.com/Tqrl5BW", "https://imgur.com/K0h0VIR", "https://imgur.com/mmK8oLh", "https://imgur.com/nkr0uMJ", "https://imgur.com/ge11pHp",
+             "https://imgur.com/lZCLW2v", "https://imgur.com/Y6T1XYz", "https://imgur.com/TWc3c9k", "https://imgur.com/ZTooY4E", "https://imgur.com/d4C3nhK",
+             "https://imgur.com/V2VwQSb", "https://imgur.com/VmyUb5y"],
+            
+    "slapself": "slapself.gif",
+    "slapText":["FUN", "TEXT", "OPTIONS", "HERE"]
+
+}
