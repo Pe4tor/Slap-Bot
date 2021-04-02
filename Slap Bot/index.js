@@ -1,4 +1,5 @@
 const Discord = require('discord.js');
+const process = require('process');
 const { prefix, token, modrole, slaps, slapself, slapText } = require('./config.json');
  const client = new Discord.Client({ws: {intents: ['GUILDS', 'GUILD_MEMBERS', 'GUILD_MESSAGES']}});
  const SQLite = require("better-sqlite3");
@@ -14,6 +15,7 @@ const { Integer } = require('better-sqlite3');
 
 
 client.once('ready', () => {
+ process.exit();
  console.log(`Logged in as ${client.user.tag}!`);
  lastSlapDate = new Date();
 
