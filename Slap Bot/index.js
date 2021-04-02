@@ -82,6 +82,7 @@ client.on('message', msg => {
 			try {
 				var taggedRole = msg.mentions.roles.first();
 				var taggedRoleName = msg.mentions.roles.first().role;
+				//Buggy here. Doesn't add the role properly and instead adds 'undefined', probably because I don't know discordjs well enough to do this
 				msg.channel.send(`You and I both know you don't have nearly enough hands to do whatever it is you do with them and also slap all of the people with the ` + taggedRoleName + ` role.`);
 			}
 			catch (e){
@@ -90,6 +91,9 @@ client.on('message', msg => {
 			
 			return;
 		}
+		
+		//Add a cooldown for slap commands
+		//BUG TO FIX: This cooldown is global and shared between all servers the bot is on. Need to find a way to fix this.
 		const now = new Date();
 		console.log("Valid slap command received");
 		
@@ -102,6 +106,9 @@ client.on('message', msg => {
 			return;
 		}
 		lastSlapDate = now;
+		
+		//Code block for incrementing slap count
+		
 		taggedUser = msg.mentions.users.first().id;
         const taggedUserDisplay = msg.mentions.users.first().username;
         let score = client.getScore.get(taggedUser, msg.guild.id);
@@ -135,14 +142,16 @@ client.on('message', msg => {
         slapped.peopleSlapped++;
         var currentSlapped = (slapped.peopleSlapped);
         client.setSlapped.run(slapped);
-        //console.log(taggedUser);
         console.log(msg.author.username + " slapped " + taggedUserDisplay);
+		
+		//Sending the embed for slaps. If the bot is muted in a particular channel, the embed won't be sent but the slap will still be stored in the database.
 
 
         //Choose random gif from array in config
         var gifToSend = slaps[Math.floor(Math.random() * slaps.length)];
         var gifSend = gifToSend + '.gif';
         //console.log(currentSlaps);
+		//Special text for slapping yourself or a bot
         var titleText = `You've been slapped by ${msg.author.username}!`;
         if (msg.author.id == taggedUser){
             titleText = 'A little weird but I won\'t judge';
@@ -153,7 +162,6 @@ client.on('message', msg => {
 			gifSend = 'https://imgur.com/dKDiwaR.gif';
 			
 		}
-        //console.log(gifSend);
 
         const slapEmbed = {
             title: titleText,
@@ -169,6 +177,8 @@ client.on('message', msg => {
         msg.channel.send({embed: slapEmbed});
     }
 
+	//!topslaps sends an embed of a leaderboard with top 5 slappers/slapees
+	//Bug: I don't know how to work with cache so sometimes the leaderboard doesn't display all users if the bot went offline (values are still there they just won't be displayed until a missing user talks again)
     else if (msg.content.startsWith(`${prefix}topslaps`)){
         const top5 = sql.prepare("SELECT * FROM slaps WHERE guild = ? ORDER BY slapcount DESC LIMIT 5;").all(msg.guild.id);
 		
